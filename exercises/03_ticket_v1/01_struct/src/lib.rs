@@ -1,3 +1,13 @@
+struct Order {
+    price: u32,
+    quantity: u32,
+}
+
+impl Order {
+    fn is_available(self) -> bool {
+        self.quantity > 0
+    }
+}
 // Define a struct named `Order` with the following fields:
 // - `price`, an unsigned integer
 // - `quantity`, an unsigned integer

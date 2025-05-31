@@ -14,7 +14,7 @@ fn insert_works() {
     };
     let command = Command::Insert {
         draft: draft.clone(),
-        response_sender,
+        response_sender: response_sender,
     };
 
     sender

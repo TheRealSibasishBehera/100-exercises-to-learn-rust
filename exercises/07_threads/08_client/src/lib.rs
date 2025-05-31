@@ -5,25 +5,43 @@ use std::sync::mpsc::{Receiver, Sender};
 pub mod data;
 pub mod store;
 
+use std::sync::Arc;
+
 #[derive(Clone)]
 // TODO: flesh out the client implementation.
-pub struct TicketStoreClient {}
+pub struct TicketStoreClient {
+    tx: Sender<Command>,
+}
 
 impl TicketStoreClient {
     // Feel free to panic on all errors, for simplicity.
     pub fn insert(&self, draft: TicketDraft) -> TicketId {
-        todo!()
+        let (itx, irx) = std::sync::mpsc::channel();
+        self.tx
+            .send(Command::Insert {
+                draft,
+                response_channel: itx,
+            })
+            .unwrap();
+        irx.recv().unwrap()
     }
 
     pub fn get(&self, id: TicketId) -> Option<Ticket> {
-        todo!()
+        let (itx, irx) = std::sync::mpsc::channel();
+        self.tx
+            .send(Command::Get {
+                id,
+                response_channel: itx,
+            })
+            .unwrap();
+        irx.recv().unwrap()
     }
 }
 
 pub fn launch() -> TicketStoreClient {
     let (sender, receiver) = std::sync::mpsc::channel();
     std::thread::spawn(move || server(receiver));
-    todo!()
+    TicketStoreClient { tx: sender }
 }
 
 // No longer public! This becomes an internal detail of the library now.
